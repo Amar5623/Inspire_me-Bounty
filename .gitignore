@@ -1,0 +1,19 @@
+# Ignore Python compiled files
+__pycache__/
+*.py[cod]
+
+# Ignore node_modules folder
+node_modules/
+
+# Ignore virtual environments
+venv/
+.venv/
+
+# Ignore database and data files
+*.db
+src/backend/data/sample_data.json
+
+# Ignore other OS and editor files
+.DS_Store
+.idea/
+*.log

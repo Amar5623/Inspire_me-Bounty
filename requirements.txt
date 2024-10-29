@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+chromadb
+sentence-transformers
+transformers
+Pillow
+numpy
+scipy
+torch
+requests
+jinja2
+pandas
