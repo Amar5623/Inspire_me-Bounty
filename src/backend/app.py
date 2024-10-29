@@ -1,16 +1,43 @@
-# src/backend/app.py
+# app.py
 
 from fastapi import FastAPI
-from .database import load_sample_data
-from .search import search_similar_content
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from typing import List, Dict
+import json
+import os
 
 app = FastAPI()
 
-@app.on_event("startup")
-async def startup_event():
-    load_sample_data()
+# Mount the images folder as static
+app.mount("/images", StaticFiles(directory="src/backend/data/images"), name="images")
 
-@app.get("/search")  # Make sure this matches the test URL
+# CORS settings
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Load sample data from sample_data.json
+sample_data_path = os.path.join("src", "backend", "data", "sample_data.json")
+
+with open(sample_data_path, "r") as file:
+    sample_data: List[Dict] = json.load(file)
+
+@app.get("/search")
 async def search(query: str):
-    results = await search_similar_content(query)
-    return {"results": results}
+    # Mock search functionality: Filter items in sample_data based on the query
+    search_results = [
+        {
+            "id": data["id"],
+            "text": data["text"],
+            "image_path": f"images/{data['image_path'].split('/')[-1]}",
+            "source": data["source"]
+        }
+        for data in sample_data if query.lower() in data["text"].lower()
+    ]
+    
+    return {"results": search_results}

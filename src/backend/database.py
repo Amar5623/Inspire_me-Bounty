@@ -1,35 +1,22 @@
-# src/backend/database.py
-
 import json
 from pathlib import Path
 from chromadb import Client
+import os
 
 def get_db_connection():
     return Client()
 
 def load_sample_data():
-    db = get_db_connection()
-    data_file = Path(__file__).parent / 'data' / 'sample_data.json'
-    
-    # Check if sample_data.json exists
-    if not data_file.exists():
-        print("Sample data file not found, skipping data load.")
-        return
-    
+    data_file = os.path.join(os.path.dirname(__file__), 'data', 'sample_data.json')
     with open(data_file, 'r') as f:
         data = json.load(f)
     
-    # Get or create a collection
-    collection = db.get_or_create_collection("sample_data")
-    
-    # Insert each item into the collection
+    db = get_db_connection()
+    collection = db.get_or_create_collection("inspirations")
+
     for item in data:
         collection.add(
-            documents=[
-                {
-                    "id": item['id'],
-                    "text": item['text'],
-                    "image_path": item['image_path']
-                }
-            ]
+            ids=[item["id"]],
+            documents=[item["content"]],
+            metadatas=[{"source": item["source"], "image_path": item["image_path"]}]
         )
